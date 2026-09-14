@@ -1,0 +1,36 @@
+{
+    "Statement": [
+        {
+            "Action": [
+                "acm:DescribeCertificate",
+                "acm:ListTagsForCertificate",
+                "acm:ImportCertificate",
+                "acm:AddTagsToCertificate",
+                "ec2:DescribeVpcs",
+                "ec2:DescribeVpcPeeringConnections",
+                "ec2:AcceptVpcPeeringConnection",
+                "ec2:ModifyVpcPeeringConnectionOptions",
+                "ec2:CreateRoute",
+                "ec2:ReplaceRoute",
+                "ec2:DeleteRoute",
+                "ec2:DescribeRouteTables",
+                "ec2:CreateTags",
+                "route53:GetHostedZone",
+                "route53:ListHostedZones",
+                "route53:ListTagsForResource",
+                "route53:ListResourceRecordSets",
+                "route53:ListVPCAssociationAuthorizations",
+                "route53:CreateVPCAssociationAuthorization",
+                "route53:DeleteVPCAssociationAuthorization",
+                "route53:AssociateVPCWithHostedZone",
+                "route53:DisassociateVPCFromHostedZone"
+            ],
+            "Effect": "Allow",
+            "Resource": [
+                "*"
+            ],
+            "Sid": "AllowVpcPeeringAndRoute53HostZone"
+        }
+    ],
+    "Version": "2012-10-17"
+}
