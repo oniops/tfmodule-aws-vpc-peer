@@ -4,7 +4,7 @@ output "id" {
 }
 
 output "name" {
-  description = "Name tag of the peering connection, <name_prefix>-<name>-pcx."
+  description = "Name tag of the peering connection: fullname when it is set, otherwise <name_prefix>-<name>-pcx."
   value       = local.name
 }
 
@@ -31,4 +31,14 @@ output "requester_private_zone_id" {
 output "accepter_private_zone_id" {
   description = "Hosted zone ID of accepter.private_domain associated with the requester VPC. null when not configured."
   value       = one(data.aws_route53_zone.accepter[*].zone_id)
+}
+
+output "accepter_account_id" {
+  description = "Resolved accepter AWS account ID (explicit accepter.account_id, or derived from the aws.accepter provider when omitted)."
+  value       = local.accepter_account_id
+}
+
+output "accepter_region" {
+  description = "Resolved accepter region (explicit accepter.region, or derived from the aws.accepter provider when omitted)."
+  value       = local.accepter_region
 }
