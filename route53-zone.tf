@@ -50,7 +50,7 @@ resource "aws_route53_vpc_association_authorization" "requester" {
 
   zone_id    = data.aws_route53_zone.requester[0].zone_id
   vpc_id     = var.accepter.vpc_id
-  vpc_region = var.accepter.region
+  vpc_region = local.accepter_region
 
   depends_on = [aws_vpc_peering_connection_accepter.this]
 }
@@ -61,7 +61,7 @@ resource "aws_route53_zone_association" "requester" {
 
   zone_id    = data.aws_route53_zone.requester[0].zone_id
   vpc_id     = var.accepter.vpc_id
-  vpc_region = var.accepter.region
+  vpc_region = local.accepter_region
 
   depends_on = [aws_route53_vpc_association_authorization.requester]
 }
