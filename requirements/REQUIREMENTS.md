@@ -328,7 +328,7 @@ Optional override of the Name tag. When set, the Name tag of the peering connect
 
 Use it to spell out the requester -> accepter direction of the connection, which the default rule cannot express because it only knows the requester side prefix. The module appends nothing, so add the -pcx suffix yourself if you want it. The value replaces only the Name tag: it does not change the resource addresses or the for_each keys of any resource, so switching to it never recreates anything (the Name tag is updated in place).
 
-Same character rule as name: lowercase letters, digits and hyphens only.
+Character rule: lowercase letters, digits, hyphens and spaces. It must start with a lowercase letter or digit and must not end with a space. Unlike name, spaces are allowed because the value is used only as a tag value.
 
   fullname = "fsec-an2p-to-dev-an2d-pcx"
 EOF
@@ -336,8 +336,8 @@ EOF
   default     = null
 
   validation {
-    condition     = var.fullname == null || can(regex("^[a-z0-9][a-z0-9-]*$", var.fullname))
-    error_message = "fullname must start with a lowercase letter or digit and contain only lowercase letters, digits and hyphens when set."
+    condition     = var.fullname == null || can(regex("^[a-z0-9]([a-z0-9 -]*[a-z0-9-])?$", var.fullname))
+    error_message = "fullname must start with a lowercase letter or digit, contain only lowercase letters, digits, hyphens and spaces, and not end with a space when set."
   }
 }
 ```

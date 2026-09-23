@@ -231,7 +231,7 @@ module "pcx_apple" {
 - 선택 입력이며 기본값은 `null` 입니다. 적지 않으면 기존과 완전히 같은 이름이 나옵니다(하위 호환).
 - 모듈이 아무 접두어·접미어도 붙이지 않습니다. `-pcx` 접미어가 필요하면 값에 직접 포함하세요.
 - `name` 은 `fullname` 을 적어도 계속 필수입니다. `name` 은 호출자 구성 안에서 이 연결을 가리키는 키로 남고, `fullname` 은 `Name` 태그만 덮어씁니다.
-- 문자 규칙은 `name` 과 같습니다(소문자·숫자로 시작, 소문자·숫자·하이픈만). 위반하면 plan 이 실패합니다.
+- 소문자·숫자·하이픈에 더해 공백도 쓸 수 있습니다(예: `fruithub an2p to apple an2p`). 소문자·숫자로 시작해야 하며 공백으로 끝날 수 없습니다. 위반하면 plan 이 실패합니다. `name` 은 여전히 공백을 허용하지 않습니다.
 - `fullname` 은 어떤 리소스 주소나 `for_each` 키에도 쓰이지 않습니다. 기존 연결에 `fullname` 을 새로 적어도 `Name` 태그만 in-place 로 갱신되며(`~`) 재생성(`-/+`)은 일어나지 않습니다.
 
 ### Route Table 지정 방식
@@ -360,7 +360,7 @@ output "pcx_apple_id" {
 | 대상 | 조건 | 검사 위치 |
 | --- | --- | --- |
 | `name` | `^[a-z0-9][a-z0-9-]*$` 에 맞지 않음 | `validation` |
-| `fullname` | 값이 있는데 `^[a-z0-9][a-z0-9-]*$` 에 맞지 않음 (생략은 허용) | `validation` |
+| `fullname` | 값이 있는데 `^[a-z0-9]([a-z0-9 -]*[a-z0-9-])?$` 에 맞지 않음 (생략은 허용) | `validation` |
 | `context.name_prefix` | `null` | `validation` |
 | `context.tags` | `null` | `validation` |
 | `context.region` | `null` | `validation` |
@@ -449,7 +449,7 @@ No modules.
 | --- | --- | --- | --- | :---: |
 | context | tfmodule-context(v1.3.6 이상) 출력 객체. `name_prefix`(Name 태그 접두어), `tags`(태그 병합 1단계), `region`(요청 VPC 리전)만 쓰고 나머지 필드는 무시한다. 세 필드가 `null` 이면 plan 이 실패한다. `module.ctx.context` 를 그대로 넘긴다 | <pre>object({<br>  name_prefix  = string<br>  tags         = map(string)<br>  region       = string<br>  region_alias = optional(string)<br>  project      = optional(string)<br>  environment  = optional(string)<br>  env_alias    = optional(string)<br>  owner        = optional(string)<br>  team         = optional(string)<br>  cost_center  = optional(string)<br>  pri_domain   = optional(string)<br>})</pre> | n/a | yes |
 | name | Peering 키. `Name` 태그 `<name_prefix>-<name>-pcx` 의 `<name>`. 요청 VPC 안에서 Peering 마다 달라야 하며 소문자·숫자로 시작하고 소문자·숫자·하이픈만 허용한다. `fullname` 을 적어도 계속 필수다 | `string` | n/a | yes |
-| fullname | `Name` 태그를 이 값 그대로 덮어쓴다. 생략하면(`null`) 기본 규칙 `<name_prefix>-<name>-pcx` 를 쓴다. 요청 VPC → 수락 VPC 의 연결 흐름이 드러나는 이름을 쓰고 싶을 때 지정한다. 모듈이 접두어·접미어를 붙이지 않으므로 `-pcx` 가 필요하면 값에 포함한다. 문자 규칙은 `name` 과 같다. 리소스 주소·`for_each` 키에는 쓰이지 않는다 | `string` | `null` | no |
+| fullname | `Name` 태그를 이 값 그대로 덮어쓴다. 생략하면(`null`) 기본 규칙 `<name_prefix>-<name>-pcx` 를 쓴다. 요청 VPC → 수락 VPC 의 연결 흐름이 드러나는 이름을 쓰고 싶을 때 지정한다. 모듈이 접두어·접미어를 붙이지 않으므로 `-pcx` 가 필요하면 값에 포함한다. 소문자·숫자·하이픈·공백을 허용하며 소문자·숫자로 시작하고 공백으로 끝날 수 없다(`name` 과 달리 공백 허용). 리소스 주소·`for_each` 키에는 쓰이지 않는다 | `string` | `null` | no |
 | requester | 요청 VPC 정의. 기본 `aws` provider 의 계정·리전에 있는 VPC 다. 필드는 [requester 필드](#requester-필드) 참조 | <pre>object({<br>  vpc_id                          = string<br>  allow_remote_vpc_dns_resolution = optional(bool, true)<br>  private_domain                  = optional(string)<br>  routes = optional(map(object({<br>    route_table_id         = optional(string)<br>    route_table_name       = optional(string)<br>    destination_cidr_block = string<br>  })), {})<br>})</pre> | n/a | yes |
 | accepter | 수락 VPC 정의. `aws.accepter` provider 의 계정·리전에 있는 VPC 다. `account_id`, `region` 은 생략하면 그 provider 에서 파생하고, 적으면 provider 실제 값과 일치해야 한다. 필드는 [accepter 필드](#accepter-필드) 참조 | <pre>object({<br>  account_id                      = optional(string)<br>  region                          = optional(string)<br>  vpc_id                          = string<br>  allow_remote_vpc_dns_resolution = optional(bool, true)<br>  private_domain                  = optional(string)<br>  routes = optional(map(object({<br>    route_table_id         = optional(string)<br>    route_table_name       = optional(string)<br>    destination_cidr_block = string<br>  })), {})<br>})</pre> | n/a | yes |
 | tags | 양쪽 모든 리소스에 `context.tags` 뒤에 추가하는 태그. `Name` 은 보호 키이며 포함하면 plan 이 실패한다 | `map(string)` | `{}` | no |
